@@ -1,0 +1,28 @@
+/* styles.css */
+
+/* Custom styles (if any) */
+body {
+  font-family: "Arial", sans-serif;
+}
+
+#taskInput {
+  outline: none;
+}
+
+#addTaskBtn:hover {
+  background-color: #2563eb; /* Darker blue for hover effect */
+}
+
+button {
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Style for completed tasks */
+.line-through {
+  text-decoration: line-through;
+  color: gray;
+}
