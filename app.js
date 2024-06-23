@@ -265,3 +265,22 @@ taskInput.addEventListener("keypress", function (event) {
 
 // Load tasks when the page loads
 window.addEventListener("load", loadTasks);
+
+// Function to add a task with validation
+function addTask() {
+  const taskText = taskInput.value;
+  const dueDate = dueDateInput.value;
+  const priority = priorityInput.value;
+
+  if (taskText.trim() === "") {
+    alert("Task name cannot be empty!");
+    return;
+  }
+
+  const taskElement = createTaskElement(taskText, dueDate, priority);
+  taskList.appendChild(taskElement);
+  taskInput.value = "";
+  dueDateInput.value = "";
+  priorityInput.value = "";
+  saveTasks();
+}
