@@ -1,7 +1,7 @@
-// app.js
-
 // Select elements
 const taskInput = document.getElementById("taskInput");
+const dueDateInput = document.getElementById("dueDateInput");
+const priorityInput = document.getElementById("priorityInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
 const allTasksBtn = document.getElementById("allTasksBtn");
@@ -13,11 +13,18 @@ const searchInput = document.getElementById("searchInput");
 function saveTasks() {
   const tasks = [];
   taskList.querySelectorAll(".task-item").forEach((taskItem) => {
-    const taskText = taskItem.querySelector("span").textContent;
+    const taskText = taskItem.querySelector(".task-text").textContent;
+    const dueDate = taskItem.querySelector(".task-due-date").textContent;
+    const priority = taskItem.querySelector(".task-priority").textContent;
     const isCompleted = taskItem.querySelector(
       'input[type="checkbox"]'
     ).checked;
-    tasks.push({ text: taskText, completed: isCompleted });
+    tasks.push({
+      text: taskText,
+      dueDate: dueDate,
+      priority: priority,
+      completed: isCompleted,
+    });
   });
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
@@ -26,13 +33,18 @@ function saveTasks() {
 function loadTasks() {
   const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   tasks.forEach((task) => {
-    const taskElement = createTaskElement(task.text, task.completed);
+    const taskElement = createTaskElement(
+      task.text,
+      task.dueDate,
+      task.priority,
+      task.completed
+    );
     taskList.appendChild(taskElement);
   });
 }
 
 // Function to create a task item element
-function createTaskElement(taskText, isCompleted = false) {
+function createTaskElement(taskText, dueDate, priority, isCompleted = false) {
   const li = document.createElement("li");
   li.classList.add(
     "task-item",
@@ -53,12 +65,28 @@ function createTaskElement(taskText, isCompleted = false) {
   });
   li.appendChild(checkbox);
 
+  const taskDetails = document.createElement("div");
+  taskDetails.classList.add("flex-grow");
+
   const taskTextNode = document.createElement("span");
   taskTextNode.textContent = taskText;
+  taskTextNode.classList.add("task-text");
   if (isCompleted) {
     taskTextNode.classList.add("line-through");
   }
-  li.appendChild(taskTextNode);
+  taskDetails.appendChild(taskTextNode);
+
+  const dueDateNode = document.createElement("div");
+  dueDateNode.textContent = dueDate ? `Due: ${dueDate}` : "";
+  dueDateNode.classList.add("task-due-date", "text-sm", "text-gray-500");
+  taskDetails.appendChild(dueDateNode);
+
+  const priorityNode = document.createElement("div");
+  priorityNode.textContent = priority ? `Priority: ${priority}` : "";
+  priorityNode.classList.add("task-priority", "text-sm", "text-gray-500");
+  taskDetails.appendChild(priorityNode);
+
+  li.appendChild(taskDetails);
 
   const buttonsDiv = document.createElement("div");
 
@@ -73,7 +101,9 @@ function createTaskElement(taskText, isCompleted = false) {
     "rounded",
     "mr-2"
   );
-  editBtn.addEventListener("click", () => editTask(taskTextNode));
+  editBtn.addEventListener("click", () =>
+    editTask(taskTextNode, dueDateNode, priorityNode)
+  );
   buttonsDiv.appendChild(editBtn);
 
   // Delete button
@@ -97,19 +127,34 @@ function createTaskElement(taskText, isCompleted = false) {
 // Function to add a task
 function addTask() {
   const taskText = taskInput.value;
+  const dueDate = dueDateInput.value;
+  const priority = priorityInput.value;
+
   if (taskText.trim() !== "") {
-    const taskElement = createTaskElement(taskText);
+    const taskElement = createTaskElement(taskText, dueDate, priority);
     taskList.appendChild(taskElement);
     taskInput.value = "";
+    dueDateInput.value = "";
+    priorityInput.value = "";
     saveTasks();
   }
 }
 
 // Function to edit a task
-function editTask(taskTextNode) {
+function editTask(taskTextNode, dueDateNode, priorityNode) {
   const newText = prompt("Edit your task:", taskTextNode.textContent);
+  const newDueDate = prompt(
+    "Edit due date (YYYY-MM-DD):",
+    dueDateNode.textContent.replace("Due: ", "")
+  );
+  const newPriority = prompt(
+    "Edit priority (high, medium, low):",
+    priorityNode.textContent.replace("Priority: ", "")
+  );
   if (newText !== null && newText.trim() !== "") {
     taskTextNode.textContent = newText;
+    dueDateNode.textContent = newDueDate ? `Due: ${newDueDate}` : "";
+    priorityNode.textContent = newPriority ? `Priority: ${newPriority}` : "";
     saveTasks();
   }
 }
@@ -144,7 +189,9 @@ function searchTasks() {
   const searchText = searchInput.value.toLowerCase();
   const taskItems = taskList.querySelectorAll(".task-item");
   taskItems.forEach((taskItem) => {
-    const taskText = taskItem.querySelector("span").textContent.toLowerCase();
+    const taskText = taskItem
+      .querySelector(".task-text")
+      .textContent.toLowerCase();
     if (taskText.includes(searchText)) {
       taskItem.style.display = "flex";
     } else {
