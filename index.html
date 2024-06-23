@@ -18,24 +18,18 @@
   <body class="bg-gray-100">
     <div class="container mx-auto mt-10 max-w-lg">
       <h1 class="text-4xl font-bold mb-5 text-center">To-Do List</h1>
-      <div class="mb-4 flex flex-col">
+      <div class="mb-4 flex">
         <input
           type="text"
           id="taskInput"
-          class="border p-2 rounded w-full mb-2"
+          class="border p-2 rounded w-full"
           placeholder="Add a new task"
         />
-        <input
-          type="date"
-          id="dueDateInput"
-          class="border p-2 rounded w-full mb-2"
-          placeholder="Due date"
-        />
-        <select id="priorityInput" class="border p-2 rounded w-full mb-2">
-          <option value="">Select priority</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
+        <input type="date" id="dueDateInput" class="border p-2 rounded ml-2" />
+        <select id="priorityInput" class="border p-2 rounded ml-2">
           <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
         </select>
         <button
           id="addTaskBtn"
@@ -63,6 +57,12 @@
         >
           Completed
         </button>
+        <button
+          id="clearSortsBtn"
+          class="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Clear Filters/Sorts
+        </button>
       </div>
       <div class="mb-4 flex">
         <input
@@ -71,27 +71,6 @@
           class="border p-2 rounded w-full"
           placeholder="Search tasks"
         />
-      </div>
-      <div class="mb-4 flex justify-around">
-        <button
-          id="sortDueDateBtn"
-          class="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Sort by Due Date
-        </button>
-        <button
-          id="sortPriorityBtn"
-          class="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Sort by Priority
-        </button>
-
-        <button
-          id="clearSortsBtn"
-          class="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Clear Filters/Sorts
-        </button>
       </div>
       <ul id="taskList" class="list-disc pl-5">
         <!-- Tasks will go here -->

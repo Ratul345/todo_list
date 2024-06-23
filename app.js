@@ -8,29 +8,19 @@ const allTasksBtn = document.getElementById("allTasksBtn");
 const activeTasksBtn = document.getElementById("activeTasksBtn");
 const completedTasksBtn = document.getElementById("completedTasksBtn");
 const searchInput = document.getElementById("searchInput");
-const sortDueDateBtn = document.getElementById("sortDueDateBtn");
-const sortPriorityBtn = document.getElementById("sortPriorityBtn");
+const clearSortsBtn = document.getElementById("clearSortsBtn");
 
 // Function to save tasks to local storage
 function saveTasks() {
   const tasks = [];
   taskList.querySelectorAll(".task-item").forEach((taskItem) => {
     const taskText = taskItem.querySelector(".task-text").textContent;
-    const dueDate = taskItem
-      .querySelector(".task-due-date")
-      .textContent.replace("Due: ", "");
-    const priority = taskItem
-      .querySelector(".task-priority")
-      .textContent.replace("Priority: ", "");
+    const dueDate = taskItem.querySelector(".task-due-date").textContent;
+    const priority = taskItem.querySelector(".task-priority").textContent;
     const isCompleted = taskItem.querySelector(
       'input[type="checkbox"]'
     ).checked;
-    tasks.push({
-      text: taskText,
-      dueDate: dueDate,
-      priority: priority,
-      completed: isCompleted,
-    });
+    tasks.push({ text: taskText, dueDate, priority, completed: isCompleted });
   });
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
@@ -71,8 +61,8 @@ function createTaskElement(taskText, dueDate, priority, isCompleted = false) {
   });
   li.appendChild(checkbox);
 
-  const taskDetails = document.createElement("div");
-  taskDetails.classList.add("flex-grow");
+  const taskDetailsDiv = document.createElement("div");
+  taskDetailsDiv.classList.add("task-details", "flex", "flex-col");
 
   const taskTextNode = document.createElement("span");
   taskTextNode.textContent = taskText;
@@ -80,19 +70,19 @@ function createTaskElement(taskText, dueDate, priority, isCompleted = false) {
   if (isCompleted) {
     taskTextNode.classList.add("line-through");
   }
-  taskDetails.appendChild(taskTextNode);
+  taskDetailsDiv.appendChild(taskTextNode);
 
-  const dueDateNode = document.createElement("div");
-  dueDateNode.textContent = dueDate ? `Due: ${dueDate}` : "";
-  dueDateNode.classList.add("task-due-date", "text-sm", "text-gray-500");
-  taskDetails.appendChild(dueDateNode);
+  const taskDueDateNode = document.createElement("span");
+  taskDueDateNode.textContent = dueDate;
+  taskDueDateNode.classList.add("task-due-date", "text-sm", "text-gray-500");
+  taskDetailsDiv.appendChild(taskDueDateNode);
 
-  const priorityNode = document.createElement("div");
-  priorityNode.textContent = priority ? `Priority: ${priority}` : "";
-  priorityNode.classList.add("task-priority", "text-sm", "text-gray-500");
-  taskDetails.appendChild(priorityNode);
+  const taskPriorityNode = document.createElement("span");
+  taskPriorityNode.textContent = priority;
+  taskPriorityNode.classList.add("task-priority", "text-sm", "text-gray-500");
+  taskDetailsDiv.appendChild(taskPriorityNode);
 
-  li.appendChild(taskDetails);
+  li.appendChild(taskDetailsDiv);
 
   const buttonsDiv = document.createElement("div");
 
@@ -108,7 +98,7 @@ function createTaskElement(taskText, dueDate, priority, isCompleted = false) {
     "mr-2"
   );
   editBtn.addEventListener("click", () =>
-    editTask(taskTextNode, dueDateNode, priorityNode)
+    editTask(taskTextNode, taskDueDateNode, taskPriorityNode)
   );
   buttonsDiv.appendChild(editBtn);
 
@@ -147,22 +137,25 @@ function addTask() {
 }
 
 // Function to edit a task
-function editTask(taskTextNode, dueDateNode, priorityNode) {
+function editTask(taskTextNode, taskDueDateNode, taskPriorityNode) {
   const newText = prompt("Edit your task:", taskTextNode.textContent);
-  const newDueDate = prompt(
-    "Edit due date (YYYY-MM-DD):",
-    dueDateNode.textContent.replace("Due: ", "")
-  );
+  const newDueDate = prompt("Edit your due date:", taskDueDateNode.textContent);
   const newPriority = prompt(
-    "Edit priority (high, medium, low):",
-    priorityNode.textContent.replace("Priority: ", "")
+    "Edit your priority:",
+    taskPriorityNode.textContent
   );
+
   if (newText !== null && newText.trim() !== "") {
     taskTextNode.textContent = newText;
-    dueDateNode.textContent = newDueDate ? `Due: ${newDueDate}` : "";
-    priorityNode.textContent = newPriority ? `Priority: ${newPriority}` : "";
-    saveTasks();
   }
+  if (newDueDate !== null && newDueDate.trim() !== "") {
+    taskDueDateNode.textContent = newDueDate;
+  }
+  if (newPriority !== null && newPriority.trim() !== "") {
+    taskPriorityNode.textContent = newPriority;
+  }
+
+  saveTasks();
 }
 
 // Function to delete a task
@@ -206,39 +199,42 @@ function searchTasks() {
   });
 }
 
+// Function to clear filters and sorts
+function clearFiltersAndSorts() {
+  searchInput.value = "";
+  filterTasks("all");
+  loadTasks();
+}
+
 // Function to sort tasks by due date
 function sortTasksByDueDate() {
-  const taskItems = Array.from(taskList.querySelectorAll(".task-item"));
-  taskItems.sort((a, b) => {
-    const aDueDate = new Date(
-      a.querySelector(".task-due-date").textContent.replace("Due: ", "")
-    ).getTime();
-    const bDueDate = new Date(
-      b.querySelector(".task-due-date").textContent.replace("Due: ", "")
-    ).getTime();
-    return aDueDate - bDueDate;
+  const tasks = Array.from(taskList.querySelectorAll(".task-item"));
+  tasks.sort((a, b) => {
+    const dueDateA = new Date(a.querySelector(".task-due-date").textContent);
+    const dueDateB = new Date(b.querySelector(".task-due-date").textContent);
+    return dueDateA - dueDateB;
   });
   taskList.innerHTML = "";
-  taskItems.forEach((taskItem) => taskList.appendChild(taskItem));
+  tasks.forEach((task) => taskList.appendChild(task));
 }
 
 // Function to sort tasks by priority
 function sortTasksByPriority() {
-  const taskItems = Array.from(taskList.querySelectorAll(".task-item"));
-  const priorityOrder = { high: 1, medium: 2, low: 3 };
-  taskItems.sort((a, b) => {
-    const aPriority = a
-      .querySelector(".task-priority")
-      .textContent.replace("Priority: ", "")
-      .toLowerCase();
-    const bPriority = b
-      .querySelector(".task-priority")
-      .textContent.replace("Priority: ", "")
-      .toLowerCase();
-    return priorityOrder[aPriority] - priorityOrder[bPriority];
+  const priorityLevels = { low: 3, medium: 2, high: 1 };
+  const tasks = Array.from(taskList.querySelectorAll(".task-item"));
+  tasks.sort((a, b) => {
+    const priorityA =
+      priorityLevels[
+        a.querySelector(".task-priority").textContent.toLowerCase()
+      ];
+    const priorityB =
+      priorityLevels[
+        b.querySelector(".task-priority").textContent.toLowerCase()
+      ];
+    return priorityA - priorityB;
   });
   taskList.innerHTML = "";
-  taskItems.forEach((taskItem) => taskList.appendChild(taskItem));
+  tasks.forEach((task) => taskList.appendChild(task));
 }
 
 // Event listeners for filter buttons
@@ -252,9 +248,8 @@ searchInput.addEventListener("input", searchTasks);
 // Event listener for the add task button
 addTaskBtn.addEventListener("click", addTask);
 
-// Event listeners for sorting buttons
-sortDueDateBtn.addEventListener("click", sortTasksByDueDate);
-sortPriorityBtn.addEventListener("click", sortTasksByPriority);
+// Event listener for clear filters/sorts button
+clearSortsBtn.addEventListener("click", clearFiltersAndSorts);
 
 // Allow pressing Enter to add a task
 taskInput.addEventListener("keypress", function (event) {
@@ -265,34 +260,3 @@ taskInput.addEventListener("keypress", function (event) {
 
 // Load tasks when the page loads
 window.addEventListener("load", loadTasks);
-
-// Function to add a task with validation
-function addTask() {
-  const taskText = taskInput.value;
-  const dueDate = dueDateInput.value;
-  const priority = priorityInput.value;
-
-  if (taskText.trim() === "") {
-    alert("Task name cannot be empty!");
-    return;
-  }
-
-  const taskElement = createTaskElement(taskText, dueDate, priority);
-  taskList.appendChild(taskElement);
-  taskInput.value = "";
-  dueDateInput.value = "";
-  priorityInput.value = "";
-  saveTasks();
-}
-
-const clearSortsBtn = document.getElementById("clearSortsBtn");
-
-// Function to clear filters and sorts
-function clearFiltersAndSorts() {
-  searchInput.value = "";
-  filterTasks("all");
-  loadTasks();
-}
-
-// Event listener for clear filters/sorts button
-clearSortsBtn.addEventListener("click", clearFiltersAndSorts);
