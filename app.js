@@ -129,25 +129,3 @@ taskInput.addEventListener("keypress", function (event) {
 
 // Load tasks when the page loads
 window.addEventListener("load", loadTasks);
-
-function showInstallButton() {
-  // Display a button or other UI element that allows the user to install your PWA
-  const installButton = document.createElement("button");
-  installButton.textContent = "Install Todo App";
-  installButton.addEventListener("click", () => {
-    // Show the install prompt
-    deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === "accepted") {
-        console.log("User accepted the install prompt");
-      } else {
-        console.log("User dismissed the install prompt");
-      }
-      deferredPrompt = null;
-    });
-  });
-
-  // Append the button to your HTML where appropriate
-  document.body.appendChild(installButton);
-}

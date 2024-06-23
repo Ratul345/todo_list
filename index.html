@@ -8,7 +8,6 @@
       name="description"
       content="A simple and effective To-Do List application to manage your daily tasks."
     />
-    <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
@@ -17,9 +16,9 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="bg-gray-100">
-    <main class="container mx-auto mt-10 max-w-lg">
+    <div class="container mx-auto mt-10 max-w-lg">
       <h1 class="text-4xl font-bold mb-5 text-center">To-Do List</h1>
-      <section class="mb-4 flex">
+      <div class="mb-4 flex">
         <input
           type="text"
           id="taskInput"
@@ -32,13 +31,11 @@
         >
           Add Task
         </button>
-      </section>
-      <section>
-        <ul id="taskList" class="list-disc pl-5">
-          <!-- Tasks will go here -->
-        </ul>
-      </section>
-    </main>
+      </div>
+      <ul id="taskList" class="list-disc pl-5">
+        <!-- Tasks will go here -->
+      </ul>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>
