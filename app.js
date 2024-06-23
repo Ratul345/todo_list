@@ -7,6 +7,7 @@ const taskList = document.getElementById("taskList");
 const allTasksBtn = document.getElementById("allTasksBtn");
 const activeTasksBtn = document.getElementById("activeTasksBtn");
 const completedTasksBtn = document.getElementById("completedTasksBtn");
+const searchInput = document.getElementById("searchInput");
 
 // Function to save tasks to local storage
 function saveTasks() {
@@ -96,7 +97,6 @@ function createTaskElement(taskText, isCompleted = false) {
 // Function to add a task
 function addTask() {
   const taskText = taskInput.value;
-
   if (taskText.trim() !== "") {
     const taskElement = createTaskElement(taskText);
     taskList.appendChild(taskElement);
@@ -139,12 +139,29 @@ function filterTasks(filter) {
   });
 }
 
+// Function to search tasks
+function searchTasks() {
+  const searchText = searchInput.value.toLowerCase();
+  const taskItems = taskList.querySelectorAll(".task-item");
+  taskItems.forEach((taskItem) => {
+    const taskText = taskItem.querySelector("span").textContent.toLowerCase();
+    if (taskText.includes(searchText)) {
+      taskItem.style.display = "flex";
+    } else {
+      taskItem.style.display = "none";
+    }
+  });
+}
+
 // Event listeners for filter buttons
 allTasksBtn.addEventListener("click", () => filterTasks("all"));
 activeTasksBtn.addEventListener("click", () => filterTasks("active"));
 completedTasksBtn.addEventListener("click", () => filterTasks("completed"));
 
-// Event listener for the button
+// Event listener for the search input
+searchInput.addEventListener("input", searchTasks);
+
+// Event listener for the add task button
 addTaskBtn.addEventListener("click", addTask);
 
 // Allow pressing Enter to add a task
