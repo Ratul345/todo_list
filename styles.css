@@ -5,7 +5,9 @@ body {
   font-family: "Arial", sans-serif;
 }
 
-#taskInput {
+#taskInput,
+#dueDateInput,
+#priorityInput {
   outline: none;
 }
 
