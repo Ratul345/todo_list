@@ -8,14 +8,20 @@ const allTasksBtn = document.getElementById("allTasksBtn");
 const activeTasksBtn = document.getElementById("activeTasksBtn");
 const completedTasksBtn = document.getElementById("completedTasksBtn");
 const searchInput = document.getElementById("searchInput");
+const sortDueDateBtn = document.getElementById("sortDueDateBtn");
+const sortPriorityBtn = document.getElementById("sortPriorityBtn");
 
 // Function to save tasks to local storage
 function saveTasks() {
   const tasks = [];
   taskList.querySelectorAll(".task-item").forEach((taskItem) => {
     const taskText = taskItem.querySelector(".task-text").textContent;
-    const dueDate = taskItem.querySelector(".task-due-date").textContent;
-    const priority = taskItem.querySelector(".task-priority").textContent;
+    const dueDate = taskItem
+      .querySelector(".task-due-date")
+      .textContent.replace("Due: ", "");
+    const priority = taskItem
+      .querySelector(".task-priority")
+      .textContent.replace("Priority: ", "");
     const isCompleted = taskItem.querySelector(
       'input[type="checkbox"]'
     ).checked;
@@ -200,6 +206,41 @@ function searchTasks() {
   });
 }
 
+// Function to sort tasks by due date
+function sortTasksByDueDate() {
+  const taskItems = Array.from(taskList.querySelectorAll(".task-item"));
+  taskItems.sort((a, b) => {
+    const aDueDate = new Date(
+      a.querySelector(".task-due-date").textContent.replace("Due: ", "")
+    ).getTime();
+    const bDueDate = new Date(
+      b.querySelector(".task-due-date").textContent.replace("Due: ", "")
+    ).getTime();
+    return aDueDate - bDueDate;
+  });
+  taskList.innerHTML = "";
+  taskItems.forEach((taskItem) => taskList.appendChild(taskItem));
+}
+
+// Function to sort tasks by priority
+function sortTasksByPriority() {
+  const taskItems = Array.from(taskList.querySelectorAll(".task-item"));
+  const priorityOrder = { high: 1, medium: 2, low: 3 };
+  taskItems.sort((a, b) => {
+    const aPriority = a
+      .querySelector(".task-priority")
+      .textContent.replace("Priority: ", "")
+      .toLowerCase();
+    const bPriority = b
+      .querySelector(".task-priority")
+      .textContent.replace("Priority: ", "")
+      .toLowerCase();
+    return priorityOrder[aPriority] - priorityOrder[bPriority];
+  });
+  taskList.innerHTML = "";
+  taskItems.forEach((taskItem) => taskList.appendChild(taskItem));
+}
+
 // Event listeners for filter buttons
 allTasksBtn.addEventListener("click", () => filterTasks("all"));
 activeTasksBtn.addEventListener("click", () => filterTasks("active"));
@@ -210,6 +251,10 @@ searchInput.addEventListener("input", searchTasks);
 
 // Event listener for the add task button
 addTaskBtn.addEventListener("click", addTask);
+
+// Event listeners for sorting buttons
+sortDueDateBtn.addEventListener("click", sortTasksByDueDate);
+sortPriorityBtn.addEventListener("click", sortTasksByPriority);
 
 // Allow pressing Enter to add a task
 taskInput.addEventListener("keypress", function (event) {
