@@ -26,3 +26,8 @@ button:hover {
   text-decoration: line-through;
   color: gray;
 }
+
+/* Style for filter buttons */
+.filter-btn.active {
+  background-color: #1d4ed8; /* Dark blue when active */
+}

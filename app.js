@@ -4,6 +4,9 @@
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
+const allTasksBtn = document.getElementById("allTasksBtn");
+const activeTasksBtn = document.getElementById("activeTasksBtn");
+const completedTasksBtn = document.getElementById("completedTasksBtn");
 
 // Function to save tasks to local storage
 function saveTasks() {
@@ -116,6 +119,30 @@ function deleteTask(taskElement) {
   taskList.removeChild(taskElement);
   saveTasks();
 }
+
+// Function to filter tasks
+function filterTasks(filter) {
+  const taskItems = taskList.querySelectorAll(".task-item");
+  taskItems.forEach((taskItem) => {
+    const checkbox = taskItem.querySelector('input[type="checkbox"]');
+    switch (filter) {
+      case "all":
+        taskItem.style.display = "flex";
+        break;
+      case "active":
+        taskItem.style.display = checkbox.checked ? "none" : "flex";
+        break;
+      case "completed":
+        taskItem.style.display = checkbox.checked ? "flex" : "none";
+        break;
+    }
+  });
+}
+
+// Event listeners for filter buttons
+allTasksBtn.addEventListener("click", () => filterTasks("all"));
+activeTasksBtn.addEventListener("click", () => filterTasks("active"));
+completedTasksBtn.addEventListener("click", () => filterTasks("completed"));
 
 // Event listener for the button
 addTaskBtn.addEventListener("click", addTask);
