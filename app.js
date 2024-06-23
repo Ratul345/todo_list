@@ -284,3 +284,15 @@ function addTask() {
   priorityInput.value = "";
   saveTasks();
 }
+
+const clearSortsBtn = document.getElementById("clearSortsBtn");
+
+// Function to clear filters and sorts
+function clearFiltersAndSorts() {
+  searchInput.value = "";
+  filterTasks("all");
+  loadTasks();
+}
+
+// Event listener for clear filters/sorts button
+clearSortsBtn.addEventListener("click", clearFiltersAndSorts);
